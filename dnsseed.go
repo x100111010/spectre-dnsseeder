@@ -205,7 +205,7 @@ func main() {
 
 		// Try to split seeder host and port
 		foundIp, foundPort, err := net.SplitHostPort(cfg.Seeder)
-		if (err == nil) {
+		if err == nil {
 			seederIp = foundIp
 			seederPort, err = strconv.Atoi(foundPort)
 			if err != nil {

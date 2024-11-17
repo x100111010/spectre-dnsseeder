@@ -14,8 +14,8 @@ import (
 
 	"github.com/spectre-project/spectred/infrastructure/config"
 
-	"github.com/spectre-project/dnsseeder/version"
 	"github.com/pkg/errors"
+	"github.com/spectre-project/dnsseeder/version"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/spectre-project/spectred/util"

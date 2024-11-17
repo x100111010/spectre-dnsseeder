@@ -14,10 +14,10 @@ import (
 
 	"github.com/spectre-project/spectred/infrastructure/network/addressmanager"
 
-	"github.com/spectre-project/spectred/app/appmessage"
-	"github.com/spectre-project/spectred/domain/consensus/model/externalapi"
 	"github.com/miekg/dns"
 	"github.com/pkg/errors"
+	"github.com/spectre-project/spectred/app/appmessage"
+	"github.com/spectre-project/spectred/domain/consensus/model/externalapi"
 )
 
 // Node repesents a node in the Spectre network

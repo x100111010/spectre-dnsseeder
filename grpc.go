@@ -8,10 +8,10 @@ import (
 	"github.com/spectre-project/spectred/domain/consensus/model/externalapi"
 	"github.com/spectre-project/spectred/domain/consensus/utils/subnetworks"
 
-	"github.com/spectre-project/spectred/app/appmessage"
-	"github.com/spectre-project/spectred/infrastructure/network/dnsseed/pb"
 	"github.com/miekg/dns"
 	"github.com/pkg/errors"
+	"github.com/spectre-project/spectred/app/appmessage"
+	"github.com/spectre-project/spectred/infrastructure/network/dnsseed/pb"
 	"google.golang.org/grpc"
 )
 

@@ -16,8 +16,8 @@ import (
 	"github.com/spectre-project/spectred/domain/consensus/model/externalapi"
 	"github.com/spectre-project/spectred/domain/consensus/utils/subnetworks"
 
-	"github.com/spectre-project/spectred/infrastructure/network/dnsseed"
 	"github.com/pkg/errors"
+	"github.com/spectre-project/spectred/infrastructure/network/dnsseed"
 
 	"github.com/miekg/dns"
 )
