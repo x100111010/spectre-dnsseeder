@@ -28,6 +28,7 @@ const (
 	defaultListenPort     = "5354"
 	defaultGrpcListenPort = "3737"
 	defaultLogLevel       = "info"
+	defaultThreads        = 1
 )
 
 var (
@@ -55,8 +56,10 @@ type ConfigFlags struct {
 	Seeder      string `short:"s" long:"default-seeder" description:"IP address of a working node, optionally with a port specifier"`
 	Profile     string `long:"profile" description:"Enable HTTP profiling on given port -- NOTE port must be between 1024 and 65536"`
 	GRPCListen  string `long:"grpclisten" description:"Listen gRPC requests on address:port"`
+	NetSuffix   uint16 `long:"netsuffix" description:"Testnet network suffix number"`
 	NoLogFiles  bool   `long:"nologfiles" description:"Disable logging to file"`
 	LogLevel    string `long:"loglevel" description:"Loglevel for stdout (console). Default: info"`
+	Threads     uint8  `long:"threads" description:"Number of threads to use for polling."`
 	config.NetworkFlags
 }
 
@@ -104,6 +107,7 @@ func loadConfig() (*ConfigFlags, error) {
 		Listen:     normalizeAddress("localhost", defaultListenPort),
 		GRPCListen: normalizeAddress("localhost", defaultGrpcListenPort),
 		LogLevel:   defaultLogLevel,
+		Threads:    defaultThreads,
 	}
 
 	preCfg := activeConfig
@@ -171,6 +175,21 @@ func loadConfig() (*ConfigFlags, error) {
 		return nil, err
 	}
 
+	if activeConfig.NetSuffix != 0 {
+		if !activeConfig.Testnet {
+			return nil, errors.New("The net suffix can only be used with testnet")
+		}
+		if activeConfig.NetSuffix == 10 {
+			activeConfig.NetParams().DefaultPort = "18211"
+			activeConfig.NetParams().Name = "spectre-testnet-10"
+		} else if activeConfig.NetSuffix == 11 {
+			activeConfig.NetParams().DefaultPort = "18311"
+			activeConfig.NetParams().Name = "spectre-testnet-11"
+		} else {
+			return nil, errors.New("The only supported explicit testnet net suffixes are 10 and 11")
+		}
+	}
+
 	activeConfig.AppDir = cleanAndExpandPath(activeConfig.AppDir)
 	// Append the network type to the app directory so it is "namespaced"
 	// per network.
@@ -195,6 +214,13 @@ func loadConfig() (*ConfigFlags, error) {
 	}
 
 	initLog(activeConfig.NoLogFiles, activeConfig.LogLevel, appLogFile, appErrLogFile)
+
+	if activeConfig.Threads < 1 || activeConfig.Threads > 8 {
+		str := "threads must be between 1 and 8"
+		err := errors.Errorf(str)
+		fmt.Fprintln(os.Stderr, err)
+		return nil, err
+	}
 
 	return activeConfig, nil
 }
