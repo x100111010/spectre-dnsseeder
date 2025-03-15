@@ -14,9 +14,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/spectre-project/dnsseeder/netadapter"
 	"github.com/spectre-project/spectred/app/protocol/common"
 	"github.com/spectre-project/spectred/infrastructure/config"
-	"github.com/spectre-project/spectred/infrastructure/network/netadapter/standalone"
 
 	"github.com/pkg/errors"
 
@@ -53,7 +53,7 @@ func hostLookup(host string) ([]net.IP, error) {
 func creep() {
 	defer wg.Done()
 
-	var netAdapters []*standalone.MinimalNetAdapter
+	var netAdapters []*netadapter.DnsseedNetAdapter
 	for i := uint8(0); i < ActiveConfig().Threads; i++ {
 		netAdapters = append(netAdapters, newNetAdapter())
 	}
@@ -85,7 +85,7 @@ func creep() {
 		amgr.AddAddresses(knownPeers)
 		for _, peer := range knownPeers {
 			amgr.Attempt(peer)
-			amgr.Good(peer, nil)
+			amgr.Good(peer, nil, nil)
 		}
 	}
 
@@ -137,13 +137,13 @@ func creep() {
 	}
 }
 
-func pollPeer(netAdapter *standalone.MinimalNetAdapter, addr *appmessage.NetAddress) error {
+func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddress) error {
 	amgr.Attempt(addr)
 
 	peerAddress := net.JoinHostPort(addr.IP.String(), strconv.Itoa(int(addr.Port)))
 
 	log.Debugf("Polling peer %s", peerAddress)
-	routes, err := netAdapter.Connect(peerAddress)
+	routes, msgVersion, err := netAdapter.Connect(peerAddress)
 	if err != nil {
 		return errors.Wrapf(err, "could not connect to %s", peerAddress)
 	}
@@ -162,16 +162,16 @@ func pollPeer(netAdapter *standalone.MinimalNetAdapter, addr *appmessage.NetAddr
 	msgAddresses := message.(*appmessage.MsgAddresses)
 
 	added := amgr.AddAddresses(msgAddresses.AddressList)
-	log.Infof("Peer %s sent %d addresses, %d new",
-		peerAddress, len(msgAddresses.AddressList), added)
+	log.Infof("Peer %s (%s) sent %d addresses, %d new",
+		peerAddress, msgVersion.UserAgent, len(msgAddresses.AddressList), added)
 
-	amgr.Good(addr, nil)
+	amgr.Good(addr, &msgVersion.UserAgent, nil)
 
 	return nil
 }
 
-func newNetAdapter() *standalone.MinimalNetAdapter {
-	netAdapter, err := standalone.NewMinimalNetAdapter(&config.Config{Flags: &config.Flags{NetworkFlags: ActiveConfig().NetworkFlags}})
+func newNetAdapter() *netadapter.DnsseedNetAdapter {
+	netAdapter, err := netadapter.NewDnsseedNetAdapter(&config.Config{Flags: &config.Flags{NetworkFlags: ActiveConfig().NetworkFlags}})
 	if err != nil {
 		panic(errors.Wrap(err, "Could not start net adapter"))
 	}
