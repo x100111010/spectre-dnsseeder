@@ -211,13 +211,13 @@ func main() {
 	if len(cfg.Seeder) != 0 {
 		// Prepare the seeder address, supporting either a simple IP with default network port
 		// or a full IP:port format
-		seederIp := cfg.Seeder
+		seederIP := cfg.Seeder
 		seederPort := peersDefaultPort
 
 		// Try to split seeder host and port
-		foundIp, foundPort, err := net.SplitHostPort(cfg.Seeder)
+		foundIP, foundPort, err := net.SplitHostPort(cfg.Seeder)
 		if err == nil {
-			seederIp = foundIp
+			seederIP = foundIP
 			seederPort, err = strconv.Atoi(foundPort)
 			if err != nil {
 				log.Errorf("Invalid seeder port: %s", foundPort)
@@ -225,15 +225,15 @@ func main() {
 			}
 		}
 
-		ip := net.ParseIP(seederIp)
+		ip := net.ParseIP(seederIP)
 		if ip == nil {
-			hostAddrs, err := net.LookupHost(seederIp)
+			hostAddrs, err := net.LookupHost(seederIP)
 			if err != nil {
-				log.Warnf("Failed to resolve seed host: %v, %v, ignoring", seederIp, err)
+				log.Warnf("Failed to resolve seed host: %v, %v, ignoring", seederIP, err)
 			} else {
 				ip = net.ParseIP(hostAddrs[0])
 				if ip == nil {
-					log.Warnf("Failed to resolve seed host: %v, ignoring", seederIp)
+					log.Warnf("Failed to resolve seed host: %v, ignoring", seederIP)
 				}
 			}
 		}
