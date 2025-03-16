@@ -27,7 +27,7 @@ const (
 	defaultErrLogFilename = "dnsseeder_err.log"
 	defaultListenPort     = "5354"
 	defaultGrpcListenPort = "3737"
-	defaultLogLevel       = "info"
+	defaultLogLevel       = "debug"
 	defaultThreads        = 8
 )
 
