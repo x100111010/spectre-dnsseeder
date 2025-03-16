@@ -162,6 +162,14 @@ func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddr
 	msgAddresses := message.(*appmessage.MsgAddresses)
 
 	added := amgr.AddAddresses(msgAddresses.AddressList)
+
+	if defaultSeeder != nil && addr.IP.Equal(defaultSeeder.IP) && addr.Port == defaultSeeder.Port {
+		log.Infof("Default seeder %s:%d returned %d addresses:", addr.IP.String(), addr.Port, len(msgAddresses.AddressList))
+		for _, na := range msgAddresses.AddressList {
+			log.Infof(" - %s:%d", na.IP.String(), na.Port)
+		}
+	}
+
 	log.Infof("Peer %s (%s) sent %d addresses, %d new",
 		peerAddress, msgVersion.UserAgent, len(msgAddresses.AddressList), added)
 
@@ -240,6 +248,7 @@ func main() {
 		if ip != nil {
 			defaultSeeder = appmessage.NewNetAddressIPPort(ip, uint16(seederPort))
 			amgr.AddAddresses([]*appmessage.NetAddress{defaultSeeder})
+			log.Infof("Default seeder set to %s:%d", ip.String(), seederPort)
 		}
 	}
 
