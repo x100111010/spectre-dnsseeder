@@ -101,7 +101,7 @@ func (m *Manager) AddAddresses(addrs []*appmessage.NetAddress) int {
 
 	m.mtx.Lock()
 	for _, addr := range addrs {
-		if !addressmanager.IsRoutable(addr, ActiveConfig().NetParams().AcceptUnroutable) {
+		if addr.Port == 0 || !addressmanager.IsRoutable(addr, ActiveConfig().NetParams().AcceptUnroutable) {
 			continue
 		}
 		addrStr := addr.IP.String() + "_" + strconv.Itoa(int(addr.Port))
