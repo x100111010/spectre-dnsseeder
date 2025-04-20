@@ -165,6 +165,15 @@ func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddr
 	log.Infof("Peer %s (%s) sent %d addresses, %d new",
 		peerAddress, msgVersion.UserAgent, len(msgAddresses.AddressList), added)
 
+	// we should change this to V7 post sigma hardfork
+	const minProtocolVersion = 6
+
+	if msgVersion.ProtocolVersion < minProtocolVersion {
+		log.Debugf("Rejecting peer %s with protocol version %d (minimum required: %d)",
+			peerAddress, msgVersion.ProtocolVersion, minProtocolVersion)
+		return nil
+	}
+
 	amgr.Good(addr, &msgVersion.UserAgent, nil)
 
 	log.Debugf("Node: %s with User-Agent: %s, Protocol Version: %d", peerAddress, msgVersion.UserAgent, msgVersion.ProtocolVersion)
