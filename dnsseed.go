@@ -167,6 +167,8 @@ func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddr
 
 	amgr.Good(addr, &msgVersion.UserAgent, nil)
 
+	log.Debugf("Node: %s with User-Agent: %s, Protocol Version: %d", peerAddress, msgVersion.UserAgent, msgVersion.ProtocolVersion)
+
 	return nil
 }
 
