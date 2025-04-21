@@ -179,11 +179,17 @@ func loadConfig() (*ConfigFlags, error) {
 		if !activeConfig.Testnet {
 			return nil, errors.New("Net suffix can only be used with testnet")
 		}
-		if activeConfig.NetSuffix != 11 {
-			return nil, errors.New("Only explicit testnet suffix is 11")
+
+		switch activeConfig.NetSuffix {
+		case 10:
+			activeConfig.NetParams().DefaultPort = "18211"
+			activeConfig.NetParams().Name = "spectre-testnet-10"
+		case 11:
+			activeConfig.NetParams().DefaultPort = "18311"
+			activeConfig.NetParams().Name = "spectre-testnet-11"
+		default:
+			return nil, errors.New("Only explicit testnet suffixes are 10 and 11")
 		}
-		activeConfig.NetParams().DefaultPort = "18311"
-		activeConfig.NetParams().Name = "spectre-testnet-11"
 	}
 
 	activeConfig.AppDir = cleanAndExpandPath(activeConfig.AppDir)
