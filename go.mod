@@ -5,11 +5,12 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
+	github.com/hashicorp/go-version v1.7.0
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/miekg/dns v1.1.65
 	github.com/pkg/errors v0.9.1
 	github.com/spectre-project/spectred v0.3.15
-	google.golang.org/grpc v1.71.1
+	google.golang.org/grpc v1.72.0
 )
 
 require (
@@ -30,6 +31,6 @@ require (
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/tools v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250414145226-207652e42e2e // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250428153025-10db94c68c34 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 )

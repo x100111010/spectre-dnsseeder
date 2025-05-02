@@ -56,6 +56,8 @@ type ConfigFlags struct {
 	Seeder      string `short:"s" long:"default-seeder" description:"IP address of a working node, optionally with a port specifier"`
 	Profile     string `long:"profile" description:"Enable HTTP profiling on given port -- NOTE port must be between 1024 and 65536"`
 	GRPCListen  string `long:"grpclisten" description:"Listen gRPC requests on address:port"`
+	MinProtoVer uint8  `short:"v" long:"minprotocolversion" description:"Minimum p2p protocol version for nodes."`
+	MinUaVer    string `long:"minuseragentversion" description:"Minimum user agent version for nodes. Prefer minprotocolversion if possible."`
 	NetSuffix   uint16 `long:"netsuffix" description:"Testnet network suffix number"`
 	NoLogFiles  bool   `long:"nologfiles" description:"Disable logging to file"`
 	LogLevel    string `long:"loglevel" description:"Loglevel for stdout (console). Default: info"`

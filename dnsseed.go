@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/spectre-project/dnsseeder/checkversion"
 	"net"
 	"os"
 	"strconv"
@@ -149,6 +150,12 @@ func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddr
 	}
 	defer routes.Disconnect()
 
+	// Abort before collecting peers for nodes below minimum protocol
+	if ActiveConfig().MinProtoVer > 0 && msgVersion.ProtocolVersion < uint32(ActiveConfig().MinProtoVer) {
+		return errors.Errorf("Peer %s (%s) protocol version %d is below minimum: %d",
+			peerAddress, msgVersion.UserAgent, msgVersion.ProtocolVersion, ActiveConfig().MinProtoVer)
+	}
+
 	msgRequestAddresses := appmessage.NewMsgRequestAddresses(true, nil)
 	err = routes.OutgoingRoute.Enqueue(msgRequestAddresses)
 	if err != nil {
@@ -165,19 +172,15 @@ func pollPeer(netAdapter *netadapter.DnsseedNetAdapter, addr *appmessage.NetAddr
 	log.Infof("Peer %s (%s) sent %d addresses, %d new",
 		peerAddress, msgVersion.UserAgent, len(msgAddresses.AddressList), added)
 
-	// we should change this to V7 post sigma hardfork
-	const minProtocolVersion = 6
-
-	if msgVersion.ProtocolVersion < minProtocolVersion {
-		log.Debugf("Rejecting peer %s with protocol version %d (minimum required: %d)",
-			peerAddress, msgVersion.ProtocolVersion, minProtocolVersion)
-		return nil
+	// Abort after collecting peers for nodes below minimum user agent version
+	if ActiveConfig().MinUaVer != "" {
+		err = checkversion.CheckVersion(ActiveConfig().MinUaVer, msgVersion.UserAgent)
+		if err != nil {
+			return errors.Wrapf(err, "Peer %s version %s doesn't satisfy minimum: %s",
+				peerAddress, msgVersion.UserAgent, ActiveConfig().MinUaVer)
+		}
 	}
-
 	amgr.Good(addr, &msgVersion.UserAgent, nil)
-
-	log.Debugf("Node: %s with User-Agent: %s, Protocol Version: %d", peerAddress, msgVersion.UserAgent, msgVersion.ProtocolVersion)
-
 	return nil
 }
 
