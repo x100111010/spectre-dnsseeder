@@ -183,14 +183,14 @@ func loadConfig() (*ConfigFlags, error) {
 		}
 
 		switch activeConfig.NetSuffix {
-		case 10:
+		case 8:
 			activeConfig.NetParams().DefaultPort = "18211"
-			activeConfig.NetParams().Name = "spectre-testnet-10"
+			activeConfig.NetParams().Name = "spectre-testnet-8"
 		case 11:
 			activeConfig.NetParams().DefaultPort = "18311"
 			activeConfig.NetParams().Name = "spectre-testnet-11"
 		default:
-			return nil, errors.New("Only explicit testnet suffixes are 10 and 11")
+			return nil, errors.New("Only explicit testnet suffixes are 8 and 11")
 		}
 	}
 
